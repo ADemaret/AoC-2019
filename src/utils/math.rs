@@ -65,3 +65,44 @@ pub fn shoelace(coords: Vec<(f64, f64)>, thickness: bool) -> Result<f64, i8> {
 
     Ok(surface)
 }
+
+///
+/// get angle between two points of a grid (line, column), in degrees (0-360)
+///
+pub fn get_angle(station: (usize, usize), aster: (usize, usize)) -> f32 {
+    let f_st = (station.0 as f32, station.1 as f32);
+    let f_as = (aster.0 as f32, aster.1 as f32);
+    let a: f32 = (-f_as.0 + f_st.0) / (f_as.1 - f_st.1);
+    let mut atan = a.atan() * 180.0 / (std::f32::consts::PI);
+    if aster.0 < station.0 && aster.1 < station.1 {
+        // println!("quadrant 2");
+        atan += 180.0;
+    } else if aster.0 >= station.0 && aster.1 < station.1 {
+        // println!("quadrant 3");
+        atan += 180.0;
+    } else if aster.0 > station.0 && aster.1 >= station.1 {
+        // println!("quadrant 4");
+        atan += 360.0;
+    } else {
+        // println!("quadrant 1");
+    }
+    // println!("{:?} and {:?} => {} {}", station, aster, a, atan);
+    atan
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_angle() {
+        assert_eq!(get_angle((1,1), (1,2)),0.0);
+        assert_eq!(get_angle((1,1), (0,2)),45.0);
+        assert_eq!(get_angle((1,1), (0,1)),90.0);
+        assert_eq!(get_angle((1,1), (0,0)),135.0);
+        assert_eq!(get_angle((1,1), (1,0)),180.0);
+        assert_eq!(get_angle((1,1), (2,0)),225.0);
+        assert_eq!(get_angle((1,1), (2,1)),270.0);
+        assert_eq!(get_angle((1,1), (2,2)),315.0);
+    }
+}
